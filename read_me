@@ -1,0 +1,227 @@
+
+
+
+**Author:** David E. Blackwell  
+**Data:** CMS Heavy‑Ion D⁰ Photoproduction (HEPData)  
+**Engine:** ODIM → Observer Metrics → Clocks → Geodesics → Horizons → Embeddings
+
+---
+
+## **Overview**
+
+TimeEngine is a full pipeline that constructs **observer‑dependent time**, **clocks**, **geodesics**, **curvature**, and **horizon structure** from real CMS heavy‑ion data.
+
+This project implements:
+
+- **ODIM (Observer‑Dependent Information Metric)**  
+- **Multiple observers (O1, O2, O3)**  
+- **Multiple clocks (yield‑based + experimental)**  
+- **Geodesic solver (discrete + continuous)**  
+- **Local curvature tensors**  
+- **2D and 3D manifold embeddings**  
+- **Observer‑dependent horizons**  
+- **Full report generator**  
+- **Plotting API**
+
+Everything is built from real D⁰ cross‑section tables from CMS.
+
+---
+
+# **📌 Pipeline Structure (What Runs First, Second, Third)**
+
+There are **two stages**:
+
+---
+
+## **Stage 1 — Data Processing (Run FIRST)**  
+This stage converts raw CMS CSVs into ODIM‑ready data.
+
+### **File:**  
+```
+your_original_script.py
+```
+(or whatever you named the script that produced  
+`cms_d0_odim_processed.csv`)
+
+### **What it does:**
+
+- Loads CMS D⁰ cross‑section CSVs  
+- Computes:
+  - x  
+  - Q²  
+  - curvature  
+  - projection capacity  
+  - collapse metric  
+- Saves:
+
+```
+cms_d0_odim_processed.csv
+```
+
+### **What YOU must change:**
+
+Inside the script, update:
+
+```
+DATA_DIR = r"C:\Users\YOURNAME\path\to\HEPData"
+```
+
+to point to **where YOU stored the CMS CSV files**.
+
+That’s the only required edit.
+
+---
+
+## **Stage 2 — TimeEngineV2 (Run SECOND)**  
+This stage builds the full geometry and time structure.
+
+### **File:**  
+```
+time_engine_v2.py
+```
+
+### **What it does:**
+
+- Loads `cms_d0_odim_processed.csv`
+- Builds:
+  - Observer metrics  
+  - Observer times  
+  - Clocks  
+  - Normalized times  
+  - Local curvature  
+  - 2D + 3D MDS embeddings  
+  - Discrete + continuous geodesics  
+  - Divergence matrix  
+  - Time‑curvature tensor  
+  - Observer‑dependent horizons  
+- Saves:
+  - `time_engine_v2_output.csv`
+  - `time_engine_v2_report_*` files
+  - All plots (`.png`)
+
+### **How to run it:**
+
+```
+python time_engine_v2.py
+```
+
+No edits required unless you renamed the processed CSV.
+
+---
+
+# **📁 Directory Layout (Recommended)**
+
+```
+time_engine/
+│
+├── data/
+│   ├── raw_CMS_CSVs/
+│   ├── cms_d0_odim_processed.csv
+│
+├── engine/
+│   ├── time_engine_v2.py
+│   ├── (optional future modules)
+│
+├── output/
+│   ├── time_engine_v2_output.csv
+│   ├── time_engine_v2_report_divergence_matrix.csv
+│   ├── time_engine_v2_report_time_curvature_tensor.csv
+│   ├── plots/*.png
+│
+└── README.md
+```
+
+---
+
+# **⚙️ Changing the Data Directory**
+
+If someone else wants to run this engine, they must:
+
+1. Download the CMS CSVs from HEPData  
+2. Put them anywhere on their machine  
+3. Update the **Stage 1 script**:
+
+```
+DATA_DIR = r"C:\path\to\their\HEPData"
+```
+
+TimeEngineV2 does **not** need directory changes — it only reads the processed CSV.
+
+---
+
+# **📊 Outputs Explained**
+
+### **1. time_engine_v2_output.csv**
+The full manifold:
+
+- observer times  
+- clocks  
+- normalized times  
+- curvature  
+- 2D + 3D embeddings  
+- horizons  
+- divergence columns  
+
+### **2. Divergence Matrix**
+```
+time_engine_v2_report_divergence_matrix.csv
+```
+Shows final Δt between observers.
+
+### **3. Time Curvature Tensor**
+```
+time_engine_v2_report_time_curvature_tensor.csv
+```
+Discrete second derivative of observer time.
+
+### **4. Correlation Matrix**
+```
+time_engine_v2_report_correlations.csv
+```
+
+### **5. Plots**
+All saved in `.png` format.
+
+---
+
+# **🧠 Conceptual Summary**
+
+TimeEngine constructs a **geometry of time** from real collider data.
+
+- Observers define metrics  
+- Metrics define distances  
+- Distances define time  
+- Time defines curvature  
+- Curvature defines horizons  
+- Horizons define the boundary of agreement between observers  
+
+This is a **living manifold**, not a static dataset.
+
+---
+
+# **🚀 Running Everything (Quick Start)**
+
+```
+# Stage 1 — build processed data
+python your_original_script.py
+
+# Stage 2 — build the full time engine
+python time_engine_v2.py
+```
+
+Done.
+
+---
+
+# **🔥 Final Note**
+
+This README is written so that **any physicist, coder, or curious researcher** can clone your repo and run the entire engine without confusion.
+
+If you want, I can also:
+
+- write a **mythic‑tone README**  
+- write a **formal academic README**  
+- write a **paper‑ready Methods section**  
+- help you structure the repo into a Python package  
+
+Just tell me which direction you want to take it.
