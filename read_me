@@ -1,227 +1,269 @@
 
 
 
-**Author:** David E. Blackwell  
-**Data:** CMS Heavy‑Ion D⁰ Photoproduction (HEPData)  
-**Engine:** ODIM → Observer Metrics → Clocks → Geodesics → Horizons → Embeddings
+TimeEngine — Observer‑Dependent Information Geometry Over CMS Heavy‑Ion Data
+Author: David E. Blackwell
+Data: CMS Heavy‑Ion D⁰ Photoproduction (HEPData)
+Engine: ODIM → Observer Metrics → Clocks → Geodesics → Horizons → Embeddings → Stress Tests
 
----
+Overview
+TimeEngine is a full information‑geometric pipeline that constructs:
 
-## **Overview**
+Observer‑dependent time flows
 
-TimeEngine is a full pipeline that constructs **observer‑dependent time**, **clocks**, **geodesics**, **curvature**, and **horizon structure** from real CMS heavy‑ion data.
+Physical clocks (yield‑based + experimental)
 
-This project implements:
+Local curvature tensors
 
-- **ODIM (Observer‑Dependent Information Metric)**  
-- **Multiple observers (O1, O2, O3)**  
-- **Multiple clocks (yield‑based + experimental)**  
-- **Geodesic solver (discrete + continuous)**  
-- **Local curvature tensors**  
-- **2D and 3D manifold embeddings**  
-- **Observer‑dependent horizons**  
-- **Full report generator**  
-- **Plotting API**
+Discrete + continuous geodesics
 
-Everything is built from real D⁰ cross‑section tables from CMS.
+2D + 3D manifold embeddings
 
----
+Observer‑dependent horizons
 
-# **📌 Pipeline Structure (What Runs First, Second, Third)**
+Divergence matrices
 
-There are **two stages**:
+Time‑curvature tensors
 
----
+Phase‑2 stress tests (noise storms + metric sweeps)
 
-## **Stage 1 — Data Processing (Run FIRST)**  
+Everything is built from real CMS D⁰ cross‑section tables.
+
+This repository contains:
+
+The full ODIM engine
+
+The V2 time engine
+
+Phase‑2 stress suite
+
+All outputs, plots, and diagnostic CSVs
+
+📌 Pipeline Structure
+There are two main stages, plus an optional Phase‑2 stress suite.
+
+Stage 1 — Data Processing (Run FIRST)
 This stage converts raw CMS CSVs into ODIM‑ready data.
 
-### **File:**  
-```
+File:
+Code
 your_original_script.py
-```
-(or whatever you named the script that produced  
-`cms_d0_odim_processed.csv`)
+What it does:
+Loads CMS D⁰ cross‑section CSVs
 
-### **What it does:**
+Computes:
 
-- Loads CMS D⁰ cross‑section CSVs  
-- Computes:
-  - x  
-  - Q²  
-  - curvature  
-  - projection capacity  
-  - collapse metric  
-- Saves:
+x
 
-```
+Q²
+
+curvature
+
+projection capacity
+
+collapse metric
+
+Saves:
+
+Code
 cms_d0_odim_processed.csv
-```
+Required edit:
+Set your CMS data folder:
 
-### **What YOU must change:**
-
-Inside the script, update:
-
-```
+python
 DATA_DIR = r"C:\Users\YOURNAME\path\to\HEPData"
-```
-
-to point to **where YOU stored the CMS CSV files**.
-
-That’s the only required edit.
-
----
-
-## **Stage 2 — TimeEngineV2 (Run SECOND)**  
-This stage builds the full geometry and time structure.
-
-### **File:**  
-```
+Stage 2 — TimeEngineV2 (Run SECOND)
+File:
+Code
 time_engine_v2.py
-```
+What it does:
+Loads cms_d0_odim_processed.csv
 
-### **What it does:**
+Builds:
 
-- Loads `cms_d0_odim_processed.csv`
-- Builds:
-  - Observer metrics  
-  - Observer times  
-  - Clocks  
-  - Normalized times  
-  - Local curvature  
-  - 2D + 3D MDS embeddings  
-  - Discrete + continuous geodesics  
-  - Divergence matrix  
-  - Time‑curvature tensor  
-  - Observer‑dependent horizons  
-- Saves:
-  - `time_engine_v2_output.csv`
-  - `time_engine_v2_report_*` files
-  - All plots (`.png`)
+Observer metrics (O1, O2, O3)
 
-### **How to run it:**
+Observer times
 
-```
+Clocks
+
+Normalized times
+
+Local curvature
+
+2D + 3D MDS embeddings
+
+Discrete + continuous geodesics
+
+Divergence matrix
+
+Time‑curvature tensor
+
+Observer‑dependent horizons
+
+Saves:
+
+time_engine_v2_output.csv
+
+time_engine_v2_report_*
+
+All plots (.png)
+
+Run:
+Code
 python time_engine_v2.py
-```
+⭐ Phase‑2 Stress Suite (Optional but Recommended)
+File:
+Code
+stress_phase2.py
+This script performs:
 
-No edits required unless you renamed the processed CSV.
+1. Deterministic Noise Test
+Injects 1%, 2%, 5% noise into σ
 
----
+Re‑runs the engine
 
-# **📁 Directory Layout (Recommended)**
+Logs:
 
-```
+final observer times
+
+divergences
+
+horizon counts
+
+runtime
+
+Output:
+
+Code
+noise_stress_results.csv
+2. Deterministic Metric Sweep
+Tests O2’s metric stability under:
+
+Code
+(ax, bx) = (10,5), (20,10), (40,20), (80,40)
+Output:
+
+Code
+metric_sweep_results.csv
+3. Monte‑Carlo Noise Storm (200 runs)
+Random σ‑noise up to 10%
+
+Re‑runs engine 200 times
+
+Logs divergence + horizon stability
+
+Output:
+
+Code
+mc_noise_stress_results.csv
+4. Random Metric Sweep (100 runs)
+Random O2 metrics:
+
+Code
+ax ∈ [5, 80]
+bx ∈ [2.5, 40]
+Output:
+
+Code
+mc_metric_stress_results.csv
+5. Dataset‑Merge Stability
+Merges all processed datasets and re‑runs the engine.
+
+Output:
+
+Code
+cms_merged_datasets.csv
+time_engine_v2_output_merged.csv
+📁 Recommended Directory Layout
+Code
 time_engine/
 │
 ├── data/
 │   ├── raw_CMS_CSVs/
 │   ├── cms_d0_odim_processed.csv
+│   ├── cms_merged_datasets.csv
 │
 ├── engine/
 │   ├── time_engine_v2.py
-│   ├── (optional future modules)
+│   ├── stress_phase2.py
 │
 ├── output/
 │   ├── time_engine_v2_output.csv
-│   ├── time_engine_v2_report_divergence_matrix.csv
-│   ├── time_engine_v2_report_time_curvature_tensor.csv
+│   ├── time_engine_v2_output_merged.csv
+│   ├── noise_stress_results.csv
+│   ├── metric_sweep_results.csv
+│   ├── mc_noise_stress_results.csv
+│   ├── mc_metric_stress_results.csv
 │   ├── plots/*.png
 │
 └── README.md
-```
+📊 Outputs Explained
+1. time_engine_v2_output.csv
+Contains:
 
----
+observer times
 
-# **⚙️ Changing the Data Directory**
+clocks
 
-If someone else wants to run this engine, they must:
+normalized times
 
-1. Download the CMS CSVs from HEPData  
-2. Put them anywhere on their machine  
-3. Update the **Stage 1 script**:
+curvature
 
-```
-DATA_DIR = r"C:\path\to\their\HEPData"
-```
+2D + 3D embeddings
 
-TimeEngineV2 does **not** need directory changes — it only reads the processed CSV.
+horizons
 
----
+divergence columns
 
-# **📊 Outputs Explained**
-
-### **1. time_engine_v2_output.csv**
-The full manifold:
-
-- observer times  
-- clocks  
-- normalized times  
-- curvature  
-- 2D + 3D embeddings  
-- horizons  
-- divergence columns  
-
-### **2. Divergence Matrix**
-```
+2. Divergence Matrix
+Code
 time_engine_v2_report_divergence_matrix.csv
-```
-Shows final Δt between observers.
-
-### **3. Time Curvature Tensor**
-```
+3. Time Curvature Tensor
+Code
 time_engine_v2_report_time_curvature_tensor.csv
-```
-Discrete second derivative of observer time.
-
-### **4. Correlation Matrix**
-```
+4. Correlation Matrix
+Code
 time_engine_v2_report_correlations.csv
-```
+5. Stress Test Outputs
+noise_stress_results.csv
 
-### **5. Plots**
-All saved in `.png` format.
+metric_sweep_results.csv
 
----
+mc_noise_stress_results.csv
 
-# **🧠 Conceptual Summary**
+mc_metric_stress_results.csv
 
-TimeEngine constructs a **geometry of time** from real collider data.
+6. Plots
+All saved in .png.
 
-- Observers define metrics  
-- Metrics define distances  
-- Distances define time  
-- Time defines curvature  
-- Curvature defines horizons  
-- Horizons define the boundary of agreement between observers  
+🧠 Conceptual Summary
+TimeEngine constructs a geometry of time from real collider data.
 
-This is a **living manifold**, not a static dataset.
+Observers define metrics
 
----
+Metrics define distances
 
-# **🚀 Running Everything (Quick Start)**
+Distances define time
 
-```
-# Stage 1 — build processed data
+Time defines curvature
+
+Curvature defines horizons
+
+Horizons define observer‑dependent causal boundaries
+
+Phase‑2 tests show the manifold is:
+
+noise‑robust
+
+metric‑rigid
+
+geometrically stable
+
+🚀 Quick Start
+Code
 python your_original_script.py
-
-# Stage 2 — build the full time engine
 python time_engine_v2.py
-```
-
-Done.
-
----
-
-# **🔥 Final Note**
-
-This README is written so that **any physicist, coder, or curious researcher** can clone your repo and run the entire engine without confusion.
-
-If you want, I can also:
-
-- write a **mythic‑tone README**  
-- write a **formal academic README**  
-- write a **paper‑ready Methods section**  
-- help you structure the repo into a Python package  
-
-Just tell me which direction you want to take it.
+python stress_phase2.py   # optional
+🔥 Final Note
+This README reflects the full engine, including Phase‑2 robustness tests.
